@@ -2,9 +2,9 @@
 
 ## Context
 
-The kit has been through two real passes (not synthetic test content):
+The kit has been through three real passes (not synthetic test content):
 
-1. **A single document** — a "How to Add an FAQ Block to a Page" instruction
+1. **A single instruction document** — "How to Add an FAQ Block to a Page"
    for a client project, with real wp-admin screenshots (`docs/add-faq-block/`
    in the working copy — deliberately not committed to this repo, since real
    client content doesn't belong in the generic kit).
@@ -13,6 +13,10 @@ The kit has been through two real passes (not synthetic test content):
    contents, and PDF bookmarks. Exercised against a synthetic 2-chapter smoke
    test (`docs/_manual-example/`); the bookmarks were personally verified in
    Preview.app.
+3. **A single report document** — "How Medication Search & Filters Work"
+   for a client project, using the "report" framing (describing current
+   behavior) rather than "instruction" (how to do something) — same real
+   wp-admin/front-end screenshot workflow, also not committed to this repo.
 
 Both levels work. Below is what's still untested or clearly missing,
 prioritized for the next pass.
@@ -105,6 +109,22 @@ The smoke test (`docs/_manual-example/`) has to be remembered and rerun by
 hand after changes under `scripts/lib/*`. No `npm test`, no CI workflow. For
 a kit meant to outlive several projects, this is a gap in regression
 protection — not critical right now, but worth keeping in mind.
+
+## 9. Running header always says "Client instructions", regardless of document type
+
+`HEADER_TEMPLATE` in `scripts/lib/render.mjs` hardcodes the right-hand label
+in the running header to "Client instructions" on every content page. The
+title page's kicker (`title-page__kicker`) is free text and gets set
+correctly per document (e.g. "Client report" for a report-framed document),
+but the content-page header doesn't follow it — so a report built today
+shows "Client report" on its cover and "Client instructions" on every page
+after that.
+
+**Direction:** either make the header label configurable (another
+`config.default.json`/`doc.config.json` key, e.g. `title.kicker`, reused for
+both the cover and the running header), or derive it from the title page's
+own kicker text at render time instead of hardcoding it in the template
+string.
 
 ## Already closed (for reference, don't re-pick these up)
 
