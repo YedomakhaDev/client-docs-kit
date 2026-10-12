@@ -1,0 +1,8 @@
+{
+  "theme": "dark",
+  "title": {
+    "showDate": true,
+    "showVersion": true,
+    "showAuthor": true
+  }
+}

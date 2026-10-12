@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Block catalog — client-docs-kit</title>
+  <link rel="stylesheet" href="styles/doc.css" />
+  <style>
+    /* Only for this reference page — never used in exported PDFs */
+    .ref-label {
+      font-family: var(--font-mono);
+      font-size: 9pt;
+      color: #888;
+      background: #fafafa;
+      border: 1px dashed #ccc;
+      padding: 1mm 2mm;
+      margin: 0 0 3mm 0;
+      display: inline-block;
+    }
+    .ref-block { padding: 8mm var(--content-pad-x); border-bottom: 2px solid #ddd; }
+    body { background: #f0f0f0; }
+    .theme-row { display: flex; gap: 4mm; }
+    .theme-row .title-page { flex: 1; width: auto; min-width: 0; height: 60mm; padding: 10mm; }
+    .theme-row .title-page__title { font-size: 13pt; margin-bottom: 2mm; }
+    .theme-row .title-page__kicker { font-size: 7pt; margin-bottom: 3mm; }
+    .theme-row .title-page__subtitle { font-size: 8pt; margin-bottom: 4mm; }
+    .theme-label { font-size: 9pt; font-weight: 600; margin: 0 0 2mm 0; color: #555; }
+    .ref-block .title-page { max-width: 100%; }
+  </style>
+</head>
+<!-- No network dependency: placeholder below is an inline SVG data URI, reused for every example figure. -->
+<body>
+
+  <div class="ref-block">
+    <p class="ref-label">title-page themes — set via config.default.json / doc.config.json ("theme") or --theme= flag</p>
+    <div class="theme-row">
+      <div>
+        <p class="theme-label">dark (default)</p>
+        <div class="title-page" data-theme-preview="dark" style="--title-bg:var(--ink-900); --title-fg:var(--inverse-text); --title-muted:var(--inverse-muted); --title-rule:rgba(255,255,255,0.25); background:var(--title-bg); color:var(--title-fg);">
+          <p class="title-page__kicker" style="color:var(--title-muted);">Client instructions</p>
+          <h1 class="title-page__title">Document title</h1>
+          <p class="title-page__subtitle" style="color:var(--title-muted);">Project name</p>
+          <div class="title-page__rule" style="background:var(--title-rule);"></div>
+        </div>
+      </div>
+      <div>
+        <p class="theme-label">light</p>
+        <div class="title-page" data-theme-preview="light" style="--title-bg:var(--paper); --title-fg:var(--paper-text); --title-muted:var(--ink-500); --title-rule:var(--ink-300); background:var(--title-bg); color:var(--title-fg); border:1px solid var(--ink-150);">
+          <p class="title-page__kicker" style="color:var(--title-muted);">Client instructions</p>
+          <h1 class="title-page__title">Document title</h1>
+          <p class="title-page__subtitle" style="color:var(--title-muted);">Project name</p>
+          <div class="title-page__rule" style="background:var(--title-rule);"></div>
+        </div>
+      </div>
+      <div>
+        <p class="theme-label">graphite</p>
+        <div class="title-page" data-theme-preview="graphite" style="--title-bg:var(--ink-700); --title-fg:var(--inverse-text); --title-muted:#bdbdbd; --title-rule:rgba(255,255,255,0.2); background:var(--title-bg); color:var(--title-fg);">
+          <p class="title-page__kicker" style="color:var(--title-muted);">Client instructions</p>
+          <h1 class="title-page__title">Document title</h1>
+          <p class="title-page__subtitle" style="color:var(--title-muted);">Project name</p>
+          <div class="title-page__rule" style="background:var(--title-rule);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ref-block" style="padding:0; border:none;">
+    <div class="title-page">
+      <p class="title-page__kicker">Client instructions</p>
+      <h1 class="title-page__title" style="font-size:22pt;">Title page</h1>
+      <p class="title-page__subtitle">template/title.html — separate file, its own export without header/footer. Each meta field below (data-field="date|version|author") can be hidden per document via config.</p>
+      <div class="title-page__rule"></div>
+      <dl class="title-page__meta">
+        <div data-field="date"><dt>Date</dt><dd>2026-10-12</dd></div>
+        <div data-field="version"><dt>Version</dt><dd>1.0</dd></div>
+        <div data-field="author"><dt>Author</dt><dd>Name</dd></div>
+      </dl>
+    </div>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.section + .section__title</p>
+    <section class="section" style="margin-top:0;">
+      <p class="section__number">Section N</p>
+      <h2 class="section__title">Section title</h2>
+    </section>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.step</p>
+    <div class="step">
+      <span class="step__index">1</span>
+      <div class="step__body">
+        <p class="step__title">Short action name</p>
+        <p class="step__text">What to do and why.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.figure</p>
+    <figure class="figure" style="max-width: 120mm;">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='360'%3E%3Crect width='600' height='360' fill='%23eeeeee'/%3E%3Ctext x='300' y='190' font-family='Arial' font-size='28' fill='%23999999' text-anchor='middle'%3Escreenshot%3C/text%3E%3C/svg%3E" alt="" />
+      <p class="figure__caption">Screenshot caption</p>
+    </figure>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.split (text + screenshot side by side)</p>
+    <div class="split">
+      <div class="split__text"><p>Short explanation next to the interface.</p></div>
+      <figure class="split__figure"><img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='360'%3E%3Crect width='600' height='360' fill='%23eeeeee'/%3E%3Ctext x='300' y='190' font-family='Arial' font-size='28' fill='%23999999' text-anchor='middle'%3Escreenshot%3C/text%3E%3C/svg%3E" alt="" /></figure>
+    </div>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.note / .note--warning</p>
+    <div class="note"><p class="note__label">Note</p><p class="note__text">Extra detail, not critical.</p></div>
+    <div class="note note--warning" style="margin-top:4mm;"><p class="note__label">Important</p><p class="note__text">A limitation the client should notice.</p></div>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.list / .checklist</p>
+    <ul class="list"><li>Regular list item</li><li>Another item</li></ul>
+    <ul class="checklist"><li>Item to check</li><li>Another checklist item</li></ul>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.table-wrap > table.doc-table</p>
+    <div class="table-wrap">
+      <table class="doc-table">
+        <thead><tr><th>Field</th><th>Value</th></tr></thead>
+        <tbody><tr><td>Parameter</td><td>Description</td></tr><tr><td>Parameter</td><td>Description</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.links</p>
+    <div class="links"><p class="links__item"><a href="#">Link to admin panel or site page</a></p></div>
+  </div>
+
+  <div class="ref-block">
+    <p class="ref-label">.page-break — utility class on .section to force a page break</p>
+    <p style="font-size:10pt; color:#666;">&lt;section class="section page-break"&gt;…&lt;/section&gt;</p>
+  </div>
+
+</body>
+</html>

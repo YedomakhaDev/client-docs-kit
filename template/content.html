@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Document content</title>
+  <link rel="stylesheet" href="../styles/doc.css" />
+</head>
+<body>
+  <main class="content">
+
+    <!-- Intro: short explanation of what this document covers and who it's for -->
+    <section class="doc-intro">
+      <p class="doc-intro__label">About this document</p>
+      <p class="doc-intro__text">
+        Short description: what this covers and which client task it's for.
+      </p>
+    </section>
+
+    <!-- Section. Repeat .section for each topic in the instructions -->
+    <section class="section">
+      <p class="section__number">Section 1</p>
+      <h2 class="section__title">Section title</h2>
+
+      <!-- Numbered step -->
+      <div class="step">
+        <span class="step__index">1</span>
+        <div class="step__body">
+          <p class="step__title">Short action name</p>
+          <p class="step__text">What exactly to do and why.</p>
+        </div>
+      </div>
+
+      <!-- Screenshot with caption -->
+      <figure class="figure">
+        <img src="screenshots/example.png" alt="Screenshot description" />
+        <p class="figure__caption">Screenshot caption</p>
+      </figure>
+
+      <!-- Note / warning: use note--warning for important limitations -->
+      <div class="note note--warning">
+        <p class="note__label">Important</p>
+        <p class="note__text">A limitation or detail that's easy to miss.</p>
+      </div>
+
+    </section>
+
+    <!-- Example of a forced page break before a large block -->
+    <section class="section page-break">
+      <p class="section__number">Section 2</p>
+      <h2 class="section__title">Next section</h2>
+
+      <!-- Text + screenshot side by side -->
+      <div class="split">
+        <div class="split__text">
+          <p>Short explanation next to the interface.</p>
+        </div>
+        <figure class="split__figure">
+          <img src="screenshots/example.png" alt="Screenshot description" />
+        </figure>
+      </div>
+
+      <!-- Checklist -->
+      <ul class="checklist">
+        <li>Checklist item</li>
+        <li>Another item</li>
+      </ul>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table class="doc-table">
+          <thead>
+            <tr><th>Field</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Parameter</td><td>Description</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Links -->
+      <div class="links">
+        <p class="links__item"><a href="#">Link to admin panel or site page</a></p>
+      </div>
+
+    </section>
+
+  </main>
+</body>
+</html>

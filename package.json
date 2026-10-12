@@ -1,0 +1,12 @@
+{
+  "name": "client-docs-kit",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "export": "node scripts/export-pdf.mjs"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "playwright": "^1.48.0"
+  }
+}

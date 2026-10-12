@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <title>Title page</title>
+  <link rel="stylesheet" href="../styles/doc.css" />
+</head>
+<body>
+  <!--
+    data-theme on <html> above is just the browser-preview default.
+    scripts/export-pdf.mjs overwrites it from config.default.json /
+    doc.config.json / --theme= before rendering the PDF. Options: dark, light, graphite.
+    Each title-page__meta row below can be hidden via config (title.showDate /
+    showVersion / showAuthor) — the data-field attribute is what the script matches on.
+  -->
+  <section class="title-page">
+    <p class="title-page__kicker">Client instructions</p>
+    <h1 class="title-page__title">Document title</h1>
+    <p class="title-page__subtitle">Project name</p>
+    <div class="title-page__rule"></div>
+    <dl class="title-page__meta">
+      <div data-field="date">
+        <dt>Date</dt>
+        <dd>12.10.2026</dd>
+      </div>
+      <div data-field="version">
+        <dt>Version</dt>
+        <dd>1.0</dd>
+      </div>
+      <div data-field="author">
+        <dt>Author</dt>
+        <dd>Name</dd>
+      </div>
+    </dl>
+  </section>
+</body>
+</html>
