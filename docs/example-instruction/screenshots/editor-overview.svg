@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
+  <rect width="1200" height="720" fill="#f3f3f3"/>
+  <rect x="24" y="24" width="1152" height="56" fill="#e4e4e4"/>
+  <rect x="24" y="96" width="220" height="600" fill="#e4e4e4"/>
+  <rect x="260" y="96" width="916" height="600" fill="#ffffff" stroke="#d9d9d9"/>
+  <text x="600" y="400" font-family="Arial" font-size="28" fill="#999999" text-anchor="middle">Screenshot: page editing panel</text>
+</svg>

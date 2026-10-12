@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>How to Edit a Page on the Site</title>
+  <link rel="stylesheet" href="../../styles/doc.css" />
+</head>
+<body>
+  <main class="content">
+
+    <section class="doc-intro">
+      <p class="doc-intro__label">About this document</p>
+      <p class="doc-intro__text">
+        This guide explains how to edit and publish a page on the site yourself —
+        without a developer's help. It's written for the client-side site administrator.
+      </p>
+    </section>
+
+    <section class="section">
+      <p class="section__number">Section 1</p>
+      <h2 class="section__title">Open the page in the editor</h2>
+
+      <div class="step">
+        <span class="step__index">1</span>
+        <div class="step__body">
+          <p class="step__title">Log in to the admin panel</p>
+          <p class="step__text">Follow the link from the "Links" section below and sign in with your credentials.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step__index">2</span>
+        <div class="step__body">
+          <p class="step__title">Open the "Pages" section</p>
+          <p class="step__text">In the left menu, select "Pages", then choose the page you need from the list.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step__index">3</span>
+        <div class="step__body">
+          <p class="step__title">Click "Edit"</p>
+          <p class="step__text">The button is in the top-right corner of the page card.</p>
+        </div>
+      </div>
+
+      <figure class="figure">
+        <img src="screenshots/editor-overview.svg" alt="General view of the page editor" />
+        <p class="figure__caption">General view of the page editing screen</p>
+      </figure>
+
+      <div class="note">
+        <p class="note__label">Note</p>
+        <p class="note__text">Changes are saved automatically every 30 seconds, but they're only visible to you until published.</p>
+      </div>
+    </section>
+
+    <section class="section page-break">
+      <p class="section__number">Section 2</p>
+      <h2 class="section__title">Edit the content and publish</h2>
+
+      <div class="step">
+        <span class="step__index">1</span>
+        <div class="step__body">
+          <p class="step__title">Edit the title and text</p>
+          <p class="step__text">
+            Click on the text block you want to edit — a formatting toolbar will appear. You can
+            change the text, add bold formatting, and insert links directly inside a paragraph.
+            For the page title, use the separate field at the top of the form — it also becomes
+            the browser tab title and is used by search engines when showing a link to the page,
+            so try to keep it short and matching the page's content. If no title is set, the system
+            automatically takes the first words of the main text, which doesn't always look tidy —
+            we recommend always filling in this field manually.
+          </p>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="split__text">
+          <p>The "Page title" field is located right above the main text. It's required.</p>
+        </div>
+        <figure class="split__figure">
+          <img src="screenshots/field-detail.svg" alt="Page title field" />
+        </figure>
+      </div>
+
+      <div class="step">
+        <span class="step__index">2</span>
+        <div class="step__body">
+          <p class="step__title">Check the result</p>
+          <p class="step__text">Click "Preview" to see the page the way visitors will see it.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step__index">3</span>
+        <div class="step__body">
+          <p class="step__title">Publish the page</p>
+          <p class="step__text">Click the "Publish" button — the changes will become visible to all site visitors.</p>
+        </div>
+      </div>
+
+      <figure class="figure figure--wide">
+        <img src="screenshots/publish-wide.svg" alt="Publish button" />
+        <p class="figure__caption">The "Publish" button in the top-right corner</p>
+      </figure>
+
+      <div class="note note--warning">
+        <p class="note__label">Important</p>
+        <p class="note__text">
+          Once published, a change can't be undone with a single click — the previous version is
+          kept in history, but it has to be restored manually. Check the text in preview mode
+          before publishing.
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="doc-table">
+          <thead>
+            <tr><th>Field</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Page title</td><td>Shown in the browser and search results</td></tr>
+            <tr><td>Page URL</td><td>The page's address on the site; not recommended to change after publishing</td></tr>
+            <tr><td>Description</td><td>Short text for previews on social media and in search</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="step__title" style="margin-top:8mm;">Before publishing, check:</p>
+      <ul class="checklist">
+        <li>The page title is filled in and matches the text</li>
+        <li>The text has no typos — checked in preview mode</li>
+        <li>All links in the text open and lead to the right pages</li>
+      </ul>
+
+      <div class="links">
+        <p class="links__item"><a href="#">Site admin panel</a></p>
+        <p class="links__item"><a href="#">Published page on the site</a></p>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

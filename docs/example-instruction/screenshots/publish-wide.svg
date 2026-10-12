@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="420" viewBox="0 0 1600 420">
+  <rect width="1600" height="420" fill="#ffffff" stroke="#d9d9d9"/>
+  <rect x="40" y="40" width="1520" height="60" fill="#f3f3f3"/>
+  <rect x="1280" y="130" width="280" height="56" fill="#e4e4e4"/>
+  <text x="800" y="260" font-family="Arial" font-size="26" fill="#999999" text-anchor="middle">Screenshot: "Publish" button (wide screen)</text>
+</svg>
