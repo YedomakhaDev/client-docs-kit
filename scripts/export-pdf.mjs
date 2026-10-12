@@ -27,6 +27,10 @@
  *   --no-author    hide the Author field on the title page
  *   --check        run the fast structural checks (see lint-doc.mjs) and
  *                  exit — no browser, no PDF. Use this while drafting.
+ *   --preview      after building the PDF, also render a single contact-sheet
+ *                  PNG (<output>-preview.png) with every page as a thumbnail —
+ *                  one image to review instead of one per page. Requires
+ *                  poppler's pdftoppm on PATH (see scripts/lib/preview.mjs).
  */
 import { chromium } from "playwright";
 import { PDFDocument } from "pdf-lib";
@@ -35,6 +39,7 @@ import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { validateDoc } from "./lib/validate.mjs";
+import { buildContactSheet } from "./lib/preview.mjs";
 
 const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -45,7 +50,7 @@ const flags = rawArgs.filter((a) => a.startsWith("--"));
 const [docDirArg, outputArg] = positional;
 
 if (!docDirArg) {
-  console.error("Usage: node scripts/export-pdf.mjs <doc-dir> [output.pdf] [--theme=dark|light|graphite] [--no-date] [--no-version] [--no-author] [--check]");
+  console.error("Usage: node scripts/export-pdf.mjs <doc-dir> [output.pdf] [--theme=dark|light|graphite] [--no-date] [--no-version] [--no-author] [--check] [--preview]");
   process.exit(1);
 }
 
@@ -80,6 +85,7 @@ if (existsSync(docConfigPath)) {
 }
 
 let checkOnly = false;
+let preview = false;
 const flagOverride = { title: {} };
 for (const flag of flags) {
   if (flag.startsWith("--theme=")) flagOverride.theme = flag.slice("--theme=".length);
@@ -87,6 +93,7 @@ for (const flag of flags) {
   else if (flag === "--no-version") flagOverride.title.showVersion = false;
   else if (flag === "--no-author") flagOverride.title.showAuthor = false;
   else if (flag === "--check") checkOnly = true;
+  else if (flag === "--preview") preview = true;
   else {
     console.error(`Unknown flag: ${flag}`);
     process.exit(1);
@@ -175,6 +182,16 @@ try {
 
   await writeFile(outputPath, await merged.save());
   console.log(`PDF ready: ${outputPath} (theme: ${config.theme})`);
+
+  if (preview) {
+    const previewPath = outputPath.replace(/\.pdf$/i, "-preview.png");
+    try {
+      const { pageCount } = await buildContactSheet(outputPath, previewPath);
+      console.log(`Preview ready: ${previewPath} (${pageCount} page(s))`);
+    } catch (err) {
+      console.error(`Preview skipped: ${err.message}`);
+    }
+  }
 } catch (err) {
   await browser.close();
   throw err;

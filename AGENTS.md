@@ -16,7 +16,8 @@ template/doc.config.json — copy-paste starting point for a per-document config
 docs/<doc-name>/         — one document = a folder with title.html + content.html + screenshots/
 scripts/new-doc.mjs      — scaffold a new docs/<doc-name>/ from template/
 scripts/lint-doc.mjs     — fast structural check, no browser, no PDF
-scripts/export-pdf.mjs   — PDF export (supports --check to lint-only)
+scripts/export-pdf.mjs   — PDF export (supports --check to lint-only, --preview for a contact sheet)
+scripts/preview-pdf.mjs  — contact-sheet PNG for an already-built PDF
 ```
 
 ## How to build a new document
@@ -47,17 +48,25 @@ scripts/export-pdf.mjs   — PDF export (supports --check to lint-only)
 6. Build the PDF:
 
    ```
-   node scripts/export-pdf.mjs docs/<doc-name>
+   node scripts/export-pdf.mjs docs/<doc-name> --preview
    ```
 
    The PDF is written to `docs/<doc-name>/<doc-name>.pdf`. `export-pdf.mjs`
    runs the same checks as step 5 first and refuses to render if they fail.
-   Spot-check the actual PDF (render 1-2 pages to PNG and look, or open it)
-   for things lint can't catch:
+   `--preview` additionally renders every page into one contact-sheet PNG
+   (`<doc-name>-preview.png`, next to the PDF) — read that one image instead
+   of rendering and reading each page separately. Use it to check things
+   lint can't:
    - short steps aren't split across pages;
    - a screenshot and its caption stay together;
    - tall screenshots aren't shrunk to an unreadable size (crop them beforehand instead);
    - tables/notes don't collide with the header or footer.
+
+   `--preview` requires poppler's `pdftoppm` on PATH (macOS: `brew install
+   poppler`; Debian/Ubuntu: `apt install poppler-utils`) — the only
+   non-npm-managed dependency in this kit. Without it, the PDF still builds
+   fine; you just don't get the contact sheet. To preview a PDF you already
+   built, without re-exporting: `node scripts/preview-pdf.mjs <pdf-path>`.
 
    You don't need to re-render and re-check every page on every edit — the
    layout engine is deterministic, so a full visual pass is mainly worth it
