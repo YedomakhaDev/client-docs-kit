@@ -7,36 +7,139 @@ only from weight, size, and spacing.
 ## Structure
 
 ```
-styles/doc.css          — all styles (screen + print), block classes
-blocks-catalog.html     — open in a browser: visual reference of every block + theme previews
-config.default.json     — project-wide defaults (theme, which title-page fields to show)
-template/title.html     — blank title page template
-template/content.html   — blank content page template with comments
+styles/doc.css           — all styles (screen + print), block classes
+blocks-catalog.html      — open in a browser: visual reference + theme previews (humans only, see note below)
+config.default.json      — project-wide defaults (theme, which title-page fields to show)
+template/title.html      — blank title page template
+template/content.html    — blank content page template with comments
 template/doc.config.json — copy-paste starting point for a per-document config override
-docs/<doc-name>/        — one document = a folder with title.html + content.html + screenshots/
-scripts/export-pdf.mjs  — PDF export
+docs/<doc-name>/         — one document = a folder with title.html + content.html + screenshots/
+scripts/new-doc.mjs      — scaffold a new docs/<doc-name>/ from template/
+scripts/lint-doc.mjs     — fast structural check, no browser, no PDF
+scripts/export-pdf.mjs   — PDF export (supports --check to lint-only)
 ```
 
 ## How to build a new document
 
-1. Copy `template/title.html` and `template/content.html` into `docs/<new-doc-name>/`.
-2. Fill in `title.html`: document title, project, date, version.
-3. Fill in `content.html` using the ready-made blocks from `blocks-catalog.html`
-   (the class name is shown under each example). Don't invent new markup —
-   assemble the document from existing classes.
-4. Put screenshots in `docs/<doc-name>/screenshots/` and reference them with a relative path.
-5. (Optional) Override settings for just this document — see "Settings" below.
+1. Scaffold it:
+
+   ```
+   node scripts/new-doc.mjs <doc-name> "<Document Title>" "<Project Name>"
+   ```
+
+   This creates `docs/<doc-name>/title.html` + `content.html` (title/project
+   already filled in, stylesheet path already correct) and an empty
+   `screenshots/` folder. `<doc-name>` must be lowercase-with-dashes.
+
+2. Fill in `content.html` using the block reference below — assemble from
+   these classes, don't invent new markup.
+3. Put screenshots in `docs/<doc-name>/screenshots/` and reference them with
+   a relative path (`screenshots/foo.png`).
+4. (Optional) Override settings for just this document — see "Settings" below.
+5. Fast check while drafting (no browser, no PDF — catches missing images,
+   empty `<title>`, bad `doc.config.json`, and warns about likely-incomplete
+   blocks, e.g. a `.step` with no `step__text`):
+
+   ```
+   node scripts/lint-doc.mjs docs/<doc-name>
+   ```
+
 6. Build the PDF:
 
    ```
    node scripts/export-pdf.mjs docs/<doc-name>
    ```
 
-   The PDF is written to `docs/<doc-name>/<doc-name>.pdf`. Open it and check that:
+   The PDF is written to `docs/<doc-name>/<doc-name>.pdf`. `export-pdf.mjs`
+   runs the same checks as step 5 first and refuses to render if they fail.
+   Spot-check the actual PDF (render 1-2 pages to PNG and look, or open it)
+   for things lint can't catch:
    - short steps aren't split across pages;
    - a screenshot and its caption stay together;
    - tall screenshots aren't shrunk to an unreadable size (crop them beforehand instead);
    - tables/notes don't collide with the header or footer.
+
+   You don't need to re-render and re-check every page on every edit — the
+   layout engine is deterministic, so a full visual pass is mainly worth it
+   right before calling a document done, not after every small text change.
+
+## Block reference (copy-paste into content.html)
+
+**Section** (repeat for each topic; add `page-break` to force a new page):
+```html
+<section class="section">
+  <p class="section__number">Section N</p>
+  <h2 class="section__title">Section title</h2>
+  ...
+</section>
+<section class="section page-break"> ... </section>
+```
+
+**Numbered step:**
+```html
+<div class="step">
+  <span class="step__index">1</span>
+  <div class="step__body">
+    <p class="step__title">Short action name</p>
+    <p class="step__text">What to do and why.</p>
+  </div>
+</div>
+```
+
+**Screenshot with caption** (add `figure--wide` on very wide screenshots to bleed past the text margin):
+```html
+<figure class="figure">
+  <img src="screenshots/example.png" alt="..." />
+  <p class="figure__caption">Caption</p>
+</figure>
+```
+
+**Text + screenshot side by side:**
+```html
+<div class="split">
+  <div class="split__text"><p>Short explanation.</p></div>
+  <figure class="split__figure"><img src="screenshots/example.png" alt="..." /></figure>
+</div>
+```
+
+**Note / warning** (`note--warning` for things the client must not miss):
+```html
+<div class="note">
+  <p class="note__label">Note</p>
+  <p class="note__text">...</p>
+</div>
+<div class="note note--warning">
+  <p class="note__label">Important</p>
+  <p class="note__text">...</p>
+</div>
+```
+
+**List / checklist:**
+```html
+<ul class="list"><li>...</li></ul>
+<ul class="checklist"><li>...</li></ul>
+```
+
+**Table:**
+```html
+<div class="table-wrap">
+  <table class="doc-table">
+    <thead><tr><th>Field</th><th>Value</th></tr></thead>
+    <tbody><tr><td>...</td><td>...</td></tr></tbody>
+  </table>
+</div>
+```
+
+**Links:**
+```html
+<div class="links">
+  <p class="links__item"><a href="#">Label</a></p>
+</div>
+```
+
+`blocks-catalog.html` renders all of the above (plus the three themes) for a
+human to look at in a browser. It's not needed to write content — this
+section is the complete markup reference.
 
 ## Settings (theme, which title-page fields to show)
 
@@ -73,14 +176,15 @@ All three themes are previewed side by side at the top of `blocks-catalog.html`
 — open it in a browser to pick one before exporting. Content pages always stay
 light regardless of theme; only the title page changes.
 
-## Block set
+## Screenshots from a live project
 
-Section heading, numbered step, screenshot with caption, text + screenshot side
-by side (`.split`), note/warning (`.note`, `.note--warning`), list/checklist,
-table, links. Full reference with markup — `blocks-catalog.html`.
-
-Forced page break — the `.page-break` class on `<section class="section">`.
-Without it, sections flow across pages naturally.
+When documenting a real app rather than writing from a mockup: drive the app
+with browser automation (e.g. the chrome-devtools / Playwright MCP tools),
+perform the actual steps, and save a screenshot after each meaningful step
+straight into `docs/<doc-name>/screenshots/`. Name them in step order
+(`01-...`, `02-...`, `03-...`) so the file list matches the document's flow.
+Then write `content.html` describing exactly what was done and reference
+those real screenshots — don't hand-wave steps that weren't actually performed.
 
 ## Implementation notes
 
@@ -97,3 +201,7 @@ Without it, sections flow across pages naturally.
   page number. The section name doesn't appear in the header — Chromium has
   no way to know which section lands on which page without manually splitting
   the document into per-section files.
+- `scripts/lint-doc.mjs` / `export-pdf.mjs --check` only catch structural
+  issues (missing images, empty title, bad config) via plain text parsing —
+  they don't launch a browser and can't catch layout/pagination problems.
+  Those still need an actual rendered PDF to see.

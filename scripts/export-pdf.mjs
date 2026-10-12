@@ -25,6 +25,8 @@
  *   --no-date      hide the Date field on the title page
  *   --no-version   hide the Version field on the title page
  *   --no-author    hide the Author field on the title page
+ *   --check        run the fast structural checks (see lint-doc.mjs) and
+ *                  exit — no browser, no PDF. Use this while drafting.
  */
 import { chromium } from "playwright";
 import { PDFDocument } from "pdf-lib";
@@ -32,6 +34,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { validateDoc } from "./lib/validate.mjs";
 
 const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -42,7 +45,7 @@ const flags = rawArgs.filter((a) => a.startsWith("--"));
 const [docDirArg, outputArg] = positional;
 
 if (!docDirArg) {
-  console.error("Usage: node scripts/export-pdf.mjs <doc-dir> [output.pdf] [--theme=dark|light|graphite] [--no-date] [--no-version] [--no-author]");
+  console.error("Usage: node scripts/export-pdf.mjs <doc-dir> [output.pdf] [--theme=dark|light|graphite] [--no-date] [--no-version] [--no-author] [--check]");
   process.exit(1);
 }
 
@@ -76,12 +79,14 @@ if (existsSync(docConfigPath)) {
   config = mergeConfig(config, readJson(docConfigPath));
 }
 
+let checkOnly = false;
 const flagOverride = { title: {} };
 for (const flag of flags) {
   if (flag.startsWith("--theme=")) flagOverride.theme = flag.slice("--theme=".length);
   else if (flag === "--no-date") flagOverride.title.showDate = false;
   else if (flag === "--no-version") flagOverride.title.showVersion = false;
   else if (flag === "--no-author") flagOverride.title.showAuthor = false;
+  else if (flag === "--check") checkOnly = true;
   else {
     console.error(`Unknown flag: ${flag}`);
     process.exit(1);
@@ -93,6 +98,18 @@ const VALID_THEMES = ["dark", "light", "graphite"];
 if (!VALID_THEMES.includes(config.theme)) {
   console.error(`Unknown theme "${config.theme}". Valid themes: ${VALID_THEMES.join(", ")}`);
   process.exit(1);
+}
+
+if (checkOnly) {
+  const { problems, warnings } = validateDoc(docDir);
+  for (const w of warnings) console.warn(`⚠ ${w}`);
+  for (const p of problems) console.error(`✗ ${p}`);
+  if (problems.length) {
+    console.error(`\n${problems.length} problem(s) found.`);
+    process.exit(1);
+  }
+  console.log(`✓ ${path.relative(process.cwd(), docDir) || "."} looks structurally OK${warnings.length ? ` (${warnings.length} warning(s))` : ""}. (theme: ${config.theme})`);
+  process.exit(0);
 }
 
 // Chromium anchors the header template to the bottom of the top margin box
