@@ -34,12 +34,14 @@
  */
 import { chromium } from "playwright";
 import { PDFDocument } from "pdf-lib";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { validateDoc } from "./lib/validate.mjs";
 import { buildContactSheet } from "./lib/preview.mjs";
+import { renderTitlePage, renderContentPages } from "./lib/render.mjs";
+import { VALID_THEMES, readJson, mergeConfig } from "./lib/config.mjs";
 
 const ROOT_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -66,17 +68,6 @@ for (const p of [titlePath, contentPath]) {
   }
 }
 
-function readJson(p) {
-  return JSON.parse(readFileSync(p, "utf8"));
-}
-
-function mergeConfig(base, override = {}) {
-  return {
-    theme: override.theme ?? base.theme,
-    title: { ...base.title, ...override.title },
-  };
-}
-
 let config = readJson(path.join(ROOT_DIR, "config.default.json"));
 
 const docConfigPath = path.join(docDir, "doc.config.json");
@@ -101,7 +92,6 @@ for (const flag of flags) {
 }
 config = mergeConfig(config, flagOverride);
 
-const VALID_THEMES = ["dark", "light", "graphite"];
 if (!VALID_THEMES.includes(config.theme)) {
   console.error(`Unknown theme "${config.theme}". Valid themes: ${VALID_THEMES.join(", ")}`);
   process.exit(1);
@@ -119,57 +109,13 @@ if (checkOnly) {
   process.exit(0);
 }
 
-// Chromium anchors the header template to the bottom of the top margin box
-// (i.e. right next to the content) and the footer template to the top of the
-// bottom margin box — both closest to the content by default. height:100%
-// plus flex alignment pushes them toward the outer page edge instead, so
-// they don't collide with content that runs close to the margin boundary.
-const HEADER_TEMPLATE = `
-  <div style="width:100%; height:100%; font-family:-apple-system,'Segoe UI',Arial,sans-serif; font-size:8px; color:#8a8a8a; padding:0 22mm; box-sizing:border-box; display:flex; align-items:flex-start; justify-content:space-between;">
-    <span class="title"></span>
-    <span>Client instructions</span>
-  </div>`;
-
-const FOOTER_TEMPLATE = `
-  <div style="width:100%; height:100%; font-family:-apple-system,'Segoe UI',Arial,sans-serif; font-size:8px; color:#8a8a8a; padding:0 22mm; box-sizing:border-box; display:flex; align-items:flex-end; justify-content:flex-end;">
-    <span><span class="pageNumber"></span> / <span class="totalPages"></span></span>
-  </div>`;
-
 const browser = await chromium.launch();
 
 try {
   const page = await browser.newPage();
 
-  await page.goto(pathToFileURL(titlePath).href, { waitUntil: "networkidle" });
-  await page.evaluate(({ theme, fields }) => {
-    document.documentElement.setAttribute("data-theme", theme);
-    for (const [field, show] of Object.entries(fields)) {
-      if (show) continue;
-      document.querySelector(`[data-field="${field}"]`)?.remove();
-    }
-  }, {
-    theme: config.theme,
-    fields: {
-      date: config.title.showDate,
-      version: config.title.showVersion,
-      author: config.title.showAuthor,
-    },
-  });
-  const titlePdf = await page.pdf({
-    format: "A4",
-    printBackground: true,
-    margin: { top: "0mm", bottom: "0mm", left: "0mm", right: "0mm" },
-  });
-
-  await page.goto(pathToFileURL(contentPath).href, { waitUntil: "networkidle" });
-  const contentPdf = await page.pdf({
-    format: "A4",
-    printBackground: true,
-    displayHeaderFooter: true,
-    headerTemplate: HEADER_TEMPLATE,
-    footerTemplate: FOOTER_TEMPLATE,
-    margin: { top: "20mm", bottom: "18mm", left: "0mm", right: "0mm" },
-  });
+  const titlePdf = await renderTitlePage(page, titlePath, config);
+  const contentPdf = await renderContentPages(page, contentPath, { footer: true });
 
   await browser.close();
 
