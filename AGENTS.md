@@ -18,6 +18,9 @@ scripts/new-doc.mjs      — scaffold a new docs/<doc-name>/ from template/
 scripts/lint-doc.mjs     — fast structural check, no browser, no PDF
 scripts/export-pdf.mjs   — PDF export (supports --check to lint-only, --preview for a contact sheet)
 scripts/preview-pdf.mjs  — contact-sheet PNG for an already-built PDF
+scripts/build-manual.mjs — assemble several docs/<name>/ chapters into one
+                            continuously-paginated, bookmarked PDF (see
+                            "Building a multi-chapter manual" below)
 ```
 
 ## How to build a new document
@@ -195,6 +198,68 @@ straight into `docs/<doc-name>/screenshots/`. Name them in step order
 Then write `content.html` describing exactly what was done and reference
 those real screenshots — don't hand-wave steps that weren't actually performed.
 
+## Building a multi-chapter manual
+
+For a deliverable that covers much more ground than one document — e.g. a
+full site-administration guide at the end of a build — don't try to write
+one giant `content.html`. Author each topic as its own normal doc folder
+(same scaffold → lint → export workflow as above), then assemble the
+finished chapters into one continuously-paginated book with
+`scripts/build-manual.mjs`.
+
+1. Build each chapter as its own `docs/<name>/` folder, written and
+   lint-checked independently, same as any other document. Chapters can be
+   drafted and screenshotted in parallel and reviewed on their own — nothing
+   about authoring a single chapter differs from authoring a standalone doc.
+
+2. Create a manifest JSON next to a `title.html` for the book's own cover
+   (copy `template/title.html` and fill it in exactly as you would for a
+   single document):
+
+   ```json
+   {
+     "title": "Book title",
+     "chapters": [
+       { "doc": "../pages-and-blocks" },
+       { "doc": "../managing-faq", "title": "Optional title override" }
+     ]
+   }
+   ```
+
+   `doc` resolves relative to the manifest's own directory. Per-chapter
+   `title` is optional — it falls back to that chapter's own `content.html`
+   `<title>` if omitted. The manifest's own `title` is used on the
+   table-of-contents page only; the cover's actual visible text comes from
+   the manifest-adjacent `title.html` — one source of truth for what the
+   cover displays, same as any document.
+
+3. Build it:
+
+   ```
+   node scripts/build-manual.mjs docs/<manifest-folder>/manifest.json --preview
+   ```
+
+   This validates every chapter up front (the same checks as
+   `lint-doc.mjs`, aggregated across all of them — fix everything listed
+   before it opens a browser), then renders: cover → table of contents (with
+   real page numbers) → one divider page + content per chapter, with
+   continuous page numbers across the whole book (not reset per chapter) and
+   a PDF outline/bookmark sidebar (one entry per chapter plus the table of
+   contents itself; cover excluded). The outline is flat — chapter-level
+   only, no nested section bookmarks.
+
+4. Scope before you write. Don't document every technical surface with
+   equal depth — tier it: what the client edits often (pages/blocks, core
+   content types) gets full step-by-step treatment; what they touch rarely
+   gets a short chapter; anything dev-only doesn't belong in a client-facing
+   manual at all. A flat, equally-detailed chapter list for a large project
+   produces a manual nobody finishes reading.
+
+See `docs/_manual-example/` for a working 2-chapter example (built from the
+kit's own synthetic `example-instruction` and `demo-walkthrough` docs) — a
+reference for the manifest shape, and a smoke test to rerun if you change
+anything under `scripts/lib/`.
+
 ## Implementation notes
 
 - The title page and content pages are rendered and exported **separately**,
@@ -214,6 +279,14 @@ those real screenshots — don't hand-wave steps that weren't actually performed
   issues (missing images, empty title, bad config) via plain text parsing —
   they don't launch a browser and can't catch layout/pagination problems.
   Those still need an actual rendered PDF to see.
+- `build-manual.mjs`'s PDF outline/bookmarks (`scripts/lib/outline.mjs`) are
+  hand-built via pdf-lib's low-level `PDFContext`/`PDFDict` primitives —
+  pdf-lib has no high-level bookmark API. Contact-sheet PNGs can't show
+  whether this worked (outlines render in the viewer's sidebar, not on the
+  page) — check with `open <pdf>` and look at the bookmarks/table-of-contents
+  panel. If a future pdf-lib upgrade breaks this, the manual still works
+  without it: the printed table of contents has the same titles and page
+  numbers, just without sidebar jump links.
 
 ## Claude Code integration
 
