@@ -214,3 +214,14 @@ those real screenshots — don't hand-wave steps that weren't actually performed
   issues (missing images, empty title, bad config) via plain text parsing —
   they don't launch a browser and can't catch layout/pagination problems.
   Those still need an actual rendered PDF to see.
+
+## Claude Code integration
+
+- This file is read automatically by coding agents that support the
+  AGENTS.md convention. `CLAUDE.md` in this same folder is a one-line pointer
+  to this file, for Claude Code specifically.
+- `claude-skill/new-doc/` contains a ready-made Claude Code skill that wraps
+  the full build loop (scaffold → fill → lint → screenshots → export) behind
+  a `/new-doc` command. It's not auto-discovered from inside a cloned
+  subfolder — copy `claude-skill/new-doc/` into your host project's
+  `.claude/skills/new-doc/` once to enable it there.
