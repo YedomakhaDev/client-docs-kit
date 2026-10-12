@@ -1,0 +1,7 @@
+{
+  "title": "Acme CMS — User Guide",
+  "chapters": [
+    { "doc": "../example-instruction" },
+    { "doc": "../demo-walkthrough" }
+  ]
+}
